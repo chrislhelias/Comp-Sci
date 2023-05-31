@@ -1,0 +1,63 @@
+/*
+// Author: Christopher L'Helias
+// Date: 10/10/22
+// Description: When movement is detected, the buzzer will go off and the RGB LED light will light up red. If movement isn't detected, the buzzer won't go off and the RGB LED light will turn green. Use switch to turn off the system.
+// Challenges: I used an RGB LED 
+// Bugs: Green light very dim
+// Sources: https://create.arduino.cc/projecthub/ammaratef45/detecting-obstacles-and-warning-arduino-and-ultrasonic-13e5ea
+*/
+
+
+// Define pins for ultrasonic and buzzer
+int const trigPin = 9;// the trigPin of the ultrasonic sensor 
+int const echoPin = 10;// the echoPin of the ultrasonic sensor
+int const buzzPin = 2;// the buzzPin of the ultrasonic
+int const greenPin = 4;// the greenPin of the ultrasonic sensor
+
+int duration; // Time it takes for sound wave to return
+long distance; // Distance away from closest object
+bool buzz = false; // if we should buzz
+
+void setup()
+{
+  pinMode(trigPin, OUTPUT); // trig pin will have pulses output
+  pinMode(echoPin, INPUT); // echo pin should be input to get pulse width
+  pinMode(buzzPin, OUTPUT); // buzz pin is output to control buzzering
+}
+
+// uses the lights and buzzer
+void useLights(){
+  if (buzz){
+    // buzz
+    digitalWrite(buzzPin, HIGH);
+    // turn off green light
+    digitalWrite(greenPin, LOW);
+  } else {
+    // don't buzz
+    digitalWrite(buzzPin, LOW);
+    // turn on green light
+    digitalWrite(greenPin, HIGH);
+  }
+}
+
+void loop(){
+  digitalWrite(trigPin, HIGH);// Send the sound wave
+  delay(10);// 10 ms delay 
+  digitalWrite(trigPin, LOW);// Sound wave stops
+  duration = pulseIn(echoPin, HIGH);// Measure the duration it took to get back
+  distance = (duration/2) / 29;// Get distance from duration
+   // Check distances 
+    if (distance <= 30) {// If the object is less than 30 cm away
+      // Buzz
+      buzz = true;
+    } else {
+      // Don't buzz
+      buzz = false;
+    }
+
+    // Use the lights
+    useLights();
+    
+    // Wait
+    delay(60);// Program will wait 60 ms
+}
